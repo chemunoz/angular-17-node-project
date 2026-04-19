@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { PokemonStorageService } from '../../services/pokemon-storage.service';
-import { Pokemon } from '../../models/pokemon.model';
+import { PokemonService } from '../../services/pokemon.service';
 
 @Component({
   selector: 'app-add-pokemon',
@@ -20,7 +19,7 @@ export class AddPokemonComponent {
   ];
 
   constructor(
-    private pokemonStorage: PokemonStorageService,
+    private pokemonService: PokemonService,
     private router: Router
   ) {}
 
@@ -63,34 +62,21 @@ export class AddPokemonComponent {
       return;
     }
 
-    const customPokemon: Pokemon = {
-      id: Date.now(),
-      name: this.name.toLowerCase(),
-      sprites: {
-        front_default: this.imageUrl,
-        other: {
-          'official-artwork': { front_default: this.imageUrl },
-          dream_world: { front_default: this.imageUrl }
-        }
-      },
-      types: this.selectedTypes.map((type, index) => ({
-        slot: index + 1,
-        type: { name: type, url: '' }
-      })),
-      abilities: [],
-      stats: [
-        { base_stat: 50, stat: { name: 'hp', url: '' } },
-        { base_stat: 50, stat: { name: 'attack', url: '' } },
-        { base_stat: 50, stat: { name: 'defense', url: '' } },
-        { base_stat: 50, stat: { name: 'speed', url: '' } }
-      ],
-      height: 10,
-      weight: 50,
-      isCustom: true
+    const customPokemon = {
+      name: this.name,
+      imageUrl: this.imageUrl,
+      types: this.selectedTypes
     };
 
-    this.pokemonStorage.addPokemon(customPokemon);
-    this.router.navigate(['/pokemon']);
+    this.pokemonService.createCustomPokemon(customPokemon).subscribe({
+      next: () => {
+        this.router.navigate(['/pokemon']);
+      },
+      error: (e) => {
+        console.error(e);
+        alert('Error creating Pokemon');
+      }
+    });
   }
 
   cancel(): void {

@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Pokemon } from '../../models/pokemon.model';
 import { PokemonService } from '../../services/pokemon.service';
-import { PokemonStorageService } from '../../services/pokemon-storage.service';
 
 @Component({
   selector: 'app-pokemon-list',
@@ -23,20 +22,10 @@ export class PokemonListComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private pokemonService: PokemonService,
-    private pokemonStorage: PokemonStorageService
-  ) {}
+  constructor(private pokemonService: PokemonService) {}
 
   ngOnInit(): void {
     this.loadPokemon();
-
-    this.pokemonStorage.customPokemon$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(customPokemon => {
-      this.pokemonList = [...this.pokemonList.filter(p => p.isCustom), ...customPokemon];
-      this.allPokemon = [...this.allPokemon.filter(p => p.isCustom), ...customPokemon];
-    });
 
     this.searchSubject.pipe(
       debounceTime(300),
@@ -67,33 +56,13 @@ export class PokemonListComponent implements OnInit, OnDestroy {
     );
   }
 
-  loadPokemon(offset: number = 0): void {
+  loadPokemon(): void {
     this.loading = true;
-    this.pokemonService.getPokemonList(this.pageSize, offset).subscribe({
+    this.pokemonService.getAllPokemon().subscribe({
       next: (data) => {
-        this.totalCount = data.count;
-        this.pokemonList = [];
-        this.allPokemon = [];
-        
-        const pokemonNames = data.results.map(r => r.name);
-        
-        pokemonNames.forEach((name, index) => {
-          this.pokemonService.getPokemon(name).subscribe({
-            next: (pokemon) => {
-              this.allPokemon[index] = pokemon;
-              if (this.searchName.length < 3) {
-                this.pokemonList = [...this.allPokemon];
-              }
-              this.pokemonList = this.allPokemon.filter(p => p !== undefined);
-            },
-            error: (e) => console.error(e)
-          });
-        });
-        
-        const customPokemon = this.pokemonStorage.getCustomPokemon();
-        this.pokemonList = [...this.pokemonList, ...customPokemon];
-        this.allPokemon = [...this.allPokemon, ...customPokemon];
-        
+        this.allPokemon = data;
+        this.pokemonList = [...this.allPokemon];
+        this.totalCount = data.length;
         this.loading = false;
       },
       error: (e) => {
@@ -108,52 +77,32 @@ export class PokemonListComponent implements OnInit, OnDestroy {
     this.currentIndex = index;
   }
 
-  searchByName(): void {
-    if (!this.searchName.trim()) {
-      this.loadPokemon();
-      return;
-    }
-    
-    this.loading = true;
-    this.pokemonService.getPokemon(this.searchName.toLowerCase()).subscribe({
-      next: (data) => {
-        this.pokemonList = [data];
-        this.currentPokemon = null;
-        this.currentIndex = -1;
-        this.loading = false;
-      },
-      error: (e) => {
-        console.error(e);
-        this.pokemonList = [];
-        this.loading = false;
-      }
-    });
-  }
-
   deletePokemon(pokemon: Pokemon, event: Event): void {
     event.stopPropagation();
-    if (pokemon.isCustom) {
-      this.pokemonStorage.deletePokemon(pokemon.id);
-      this.pokemonList = this.pokemonList.filter(p => p.id !== pokemon.id);
-      this.allPokemon = this.allPokemon.filter(p => p.id !== pokemon.id);
-      if (this.currentPokemon?.id === pokemon.id) {
-        this.currentPokemon = null;
-        this.currentIndex = -1;
-      }
+    if (pokemon.isCustom && pokemon._id) {
+      this.pokemonService.deleteCustomPokemon(pokemon._id).subscribe({
+        next: () => {
+          this.pokemonList = this.pokemonList.filter(p => p._id !== pokemon._id);
+          this.allPokemon = this.allPokemon.filter(p => p._id !== pokemon._id);
+          if (this.currentPokemon?._id === pokemon._id) {
+            this.currentPokemon = null;
+            this.currentIndex = -1;
+          }
+        },
+        error: (e) => console.error(e)
+      });
     }
   }
 
   nextPage(): void {
     if ((this.currentPage * this.pageSize) < this.totalCount) {
       this.currentPage++;
-      this.loadPokemon((this.currentPage - 1) * this.pageSize);
     }
   }
 
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.loadPokemon((this.currentPage - 1) * this.pageSize);
     }
   }
 
