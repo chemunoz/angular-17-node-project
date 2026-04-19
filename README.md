@@ -1,60 +1,139 @@
-# Angular 17 Node.js Project: CRUD example
+# Pokemon App - Full Stack Application
 
-In this tutorial, I will show you how to build a full-stack Angular 17 + Node.js example with a CRUD Application. The back-end server uses Node.js + Express for REST APIs, front-end side is an Angular App with HTTPClient.
+A full-stack Angular 17 + Node.js application for browsing and managing Pokemon. The backend syncs Pokemon data from the PokeAPI and stores them in MongoDB, with support for custom Pokemon creation.
 
-We will build a full-stack Tutorial Application in that:
-- Tutorial has id, title, description, published status.
-- User can create, retrieve, update, delete Tutorials.
-- There is a search box for finding Tutorials by title.
+## Features
 
-![angular-node-js-project-example](angular-node-js-project-example.png)
+- **Browse Pokemon**: View all Pokemon from the PokeAPI (stored locally in MongoDB)
+- **Search**: Filter Pokemon by name (minimum 3 characters)
+- **Custom Pokemon**: Create your own Pokemon with custom name, image, and types
+- **Delete Custom**: Remove custom Pokemon from your collection
+- **Details View**: View Pokemon details including stats, types, height, and weight
 
-Tutorial link:
-> [Angular 17 + Node Express + MySQL example](https://www.bezkoder.com/angular-17-node-js-express-mysql/)
+## Project Structure
 
-> [Angular 17 + Node Express + PostgreSQL example](https://www.bezkoder.com/angular-17-node-js-express-postgresql/)
-
-> [Angular 17 + Node Express + MongoDB example](https://www.bezkoder.com/angular-17-node-js-express-mongodb/)
-
-> [How to integrate Angular with Node.js Restful Services](https://www.bezkoder.com/integrate-angular-12-node-js/)
-
-More Practice:
-> [Deploying/Hosting Node.js app on Heroku with MySQL database](https://www.bezkoder.com/deploy-node-js-app-heroku-cleardb-mysql/)
-
-> [Dockerize Node Express and MySQL example](https://www.bezkoder.com/docker-compose-nodejs-mysql/)
-
-> [Dockerize Node Express and MongoDB example](https://www.bezkoder.com/docker-compose-nodejs-mongodb/)
-
-Pagination:
-> [Server side Pagination with Node.js and Angular](https://www.bezkoder.com/server-side-pagination-node-js-angular/)
-
-File Upload:
-> [Angular 17 + Node.js Express: File Upload example](https://www.bezkoder.com/angular-17-node-express-file-upload/)
-
-Security:
-> [Angular 17 + Node.js Express: JWT Authentication and Authorization example](https://www.bezkoder.com/node-js-angular-17-jwt-auth/)
-
-Associations:
-> [Sequelize Associations: One-to-Many Relationship example](https://www.bezkoder.com/sequelize-associate-one-to-many/)
-
-> [Sequelize Associations: Many-to-Many Relationship example](https://www.bezkoder.com/sequelize-associate-many-to-many/)
-
-> [MongoDB One-to-One relationship tutorial with Mongoose examples](https://www.bezkoder.com/mongoose-one-to-one-relationship-example/)
-
-> [MongoDB One-to-Many Relationship tutorial with Mongoose examples](https://www.bezkoder.com/mongoose-one-to-many-relationship/)
-
-> [MongoDB Many-to-Many Relationship with Mongoose examples](https://www.bezkoder.com/mongodb-many-to-many-mongoose/)
-
-## Project setup
-
-### Node.js Server
 ```
-cd node-express-[database]-server
+/angular-17-client/          # Angular 17 frontend
+/node-express-mongodb-server/ # Node.js + Express backend
 ```
-Run `node .`
 
-### Angular Client
+## Prerequisites
+
+- Node.js 18+
+- MongoDB (running on port 27017)
+- Docker (for MongoDB container)
+
+## Running the Project
+
+### 1. Start MongoDB
+
+```bash
+docker run -d --name mongodb -p 27017:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=admin \
+  -e MONGO_INITDB_ROOT_PASSWORD=password \
+  mongo
 ```
+
+### 2. Start Backend
+
+```bash
+cd node-express-mongodb-server
+npm install
+node server.js
+```
+
+Backend runs on http://localhost:8080
+
+### 3. Start Frontend
+
+```bash
 cd angular-17-client
+npm install
+npm start
 ```
-Run `ng serve --port 8081`. Navigate to `http://localhost:8081/`.
+
+Frontend runs on http://localhost:8081
+
+## First Run
+
+On the first run, the backend will automatically:
+1. Connect to MongoDB
+2. Sync 150 Pokemon from the PokeAPI
+3. Store them in your local database
+
+Subsequent runs will use the cached data from MongoDB.
+
+Custom Pokemon are preserved across runs.
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/pokemons/` | Get all Pokemon (syncs from API if DB empty) |
+| GET | `/api/pokemons/custom` | Get custom Pokemon only |
+| GET | `/api/pokemons/stats` | Get count statistics |
+| POST | `/api/pokemons/custom` | Create custom Pokemon |
+| DELETE | `/api/pokemons/custom/:id` | Delete custom Pokemon |
+| POST | `/api/pokemons/sync` | Force sync from PokeAPI |
+
+## Custom Pokemon Creation
+
+Navigate to http://localhost:8081/add to create a custom Pokemon:
+- **Name**: Enter the Pokemon name
+- **Image URL**: Provide a valid image URL
+- **Types**: Select one or more types
+
+Custom Pokemon will appear in the list with a "Custom" badge and can be deleted.
+
+## Dependencies
+
+### Backend (node-express-mongodb-server)
+- express: ^4.18.2
+- mongoose: ^6.11.1
+- cors: ^2.8.5
+- axios: ^1.6.0
+
+### Frontend (angular-17-client)
+- @angular/core: ^17.0.0
+- bootstrap: ^4.6.2
+- rxjs: ~7.8.0
+
+## Technology Stack
+
+- **Frontend**: Angular 17, Bootstrap 4, TypeScript
+- **Backend**: Node.js, Express, MongoDB, Mongoose
+- **External API**: PokeAPI (https://pokeapi.co/api/v2)
+
+## Database Schema
+
+### Pokemon Model
+```javascript
+{
+  pokeApiId: Number,      // ID from PokeAPI (unique)
+  name: String,          // Pokemon name
+  imageUrl: String,      // Image URL
+  types: [String],      // Pokemon types
+  stats: {              // Stats object
+    hp: Number,
+    attack: Number,
+    defense: Number,
+    speed: Number
+  },
+  height: Number,        // Height
+  weight: Number,        // Weight
+  isCustom: Boolean,     // True for custom Pokemon
+  fromApi: Boolean      // True if from PokeAPI
+}
+```
+
+## Screenshots
+
+The app includes:
+- Pokemon list with paginated cards
+- Search functionality (min 3 characters)
+- Detail view with stats
+- Custom Pokemon creation form
+
+## License
+
+ISC
