@@ -79,12 +79,13 @@ export class PokemonListComponent implements OnInit, OnDestroy {
 
   deletePokemon(pokemon: Pokemon, event: Event): void {
     event.stopPropagation();
-    if (pokemon.isCustom && pokemon._id) {
-      this.pokemonService.deleteCustomPokemon(pokemon._id).subscribe({
+    const pokemonId = pokemon.id || pokemon._id;
+    if (pokemon.isCustom && pokemonId) {
+      this.pokemonService.deleteCustomPokemon(pokemonId).subscribe({
         next: () => {
-          this.pokemonList = this.pokemonList.filter(p => p._id !== pokemon._id);
-          this.allPokemon = this.allPokemon.filter(p => p._id !== pokemon._id);
-          if (this.currentPokemon?._id === pokemon._id) {
+          this.pokemonList = this.pokemonList.filter(p => (p.id || p._id) !== pokemonId);
+          this.allPokemon = this.allPokemon.filter(p => (p.id || p._id) !== pokemonId);
+          if ((this.currentPokemon?.id || this.currentPokemon?._id) === pokemonId) {
             this.currentPokemon = null;
             this.currentIndex = -1;
           }
