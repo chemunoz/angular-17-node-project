@@ -85,6 +85,7 @@ export class PokemonListComponent implements OnInit, OnDestroy {
         next: () => {
           this.pokemonList = this.pokemonList.filter(p => (p.id || p._id) !== pokemonId);
           this.allPokemon = this.allPokemon.filter(p => (p.id || p._id) !== pokemonId);
+          this.totalCount = this.allPokemon.length;
           if ((this.currentPokemon?.id || this.currentPokemon?._id) === pokemonId) {
             this.currentPokemon = null;
             this.currentIndex = -1;
