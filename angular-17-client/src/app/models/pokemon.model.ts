@@ -1,7 +1,9 @@
 export interface Pokemon {
-  id: number;
+  _id?: string;
+  pokeApiId?: number;
   name: string;
-  sprites: {
+  imageUrl?: string;
+  sprites?: {
     front_default: string;
     other: {
       'official-artwork': {
@@ -12,53 +14,21 @@ export interface Pokemon {
       };
     };
   };
-  types: PokemonType[];
-  abilities: Ability[];
-  stats: Stat[];
-  height: number;
-  weight: number;
-  isCustom?: boolean;
-}
-
-export interface CustomPokemon {
-  name: string;
   types: string[];
-  imageUrl: string;
-}
-
-export interface PokemonType {
-  slot: number;
-  type: {
-    name: string;
-    url: string;
+  stats?: {
+    hp: number;
+    attack: number;
+    defense: number;
+    speed: number;
   };
+  height?: number;
+  weight?: number;
+  isCustom?: boolean;
+  fromApi?: boolean;
 }
 
-export interface Ability {
-  ability: {
-    name: string;
-    url: string;
-  };
-  is_hidden: boolean;
-  slot: number;
-}
-
-export interface Stat {
-  base_stat: number;
-  stat: {
-    name: string;
-    url: string;
-  };
-}
-
-export interface PokemonListResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: PokemonSummary[];
-}
-
-export interface PokemonSummary {
+export interface CustomPokemonInput {
   name: string;
-  url: string;
+  imageUrl: string;
+  types: string[];
 }

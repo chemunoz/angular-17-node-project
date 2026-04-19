@@ -1,25 +1,37 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Pokemon, PokemonListResponse } from '../models/pokemon.model';
+import { Pokemon } from '../models/pokemon.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PokemonService {
-  private apiUrl = 'https://pokeapi.co/api/v2';
+  private apiUrl = 'http://localhost:8080/api/pokemons';
 
   constructor(private http: HttpClient) {}
 
-  getPokemonList(limit: number = 20, offset: number = 0): Observable<PokemonListResponse> {
-    return this.http.get<PokemonListResponse>(`${this.apiUrl}/pokemon?limit=${limit}&offset=${offset}`);
+  getAllPokemon(): Observable<Pokemon[]> {
+    return this.http.get<Pokemon[]>(`${this.apiUrl}/`);
   }
 
-  getPokemon(name: string): Observable<Pokemon> {
-    return this.http.get<Pokemon>(`${this.apiUrl}/pokemon/${name}`);
+  getCustomPokemon(): Observable<Pokemon[]> {
+    return this.http.get<Pokemon[]>(`${this.apiUrl}/custom`);
   }
 
-  getPokemonById(id: number): Observable<Pokemon> {
-    return this.http.get<Pokemon>(`${this.apiUrl}/pokemon/${id}`);
+  createCustomPokemon(pokemon: Partial<Pokemon>): Observable<Pokemon> {
+    return this.http.post<Pokemon>(`${this.apiUrl}/custom`, pokemon);
+  }
+
+  deleteCustomPokemon(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/custom/${id}`);
+  }
+
+  syncFromApi(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/sync`, {});
+  }
+
+  getStats(): Observable<{ total: number; custom: number; fromApi: number }> {
+    return this.http.get<{ total: number; custom: number; fromApi: number }>(`${this.apiUrl}/stats`);
   }
 }
