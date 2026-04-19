@@ -13,8 +13,8 @@ A full-stack Angular 17 + Node.js application for browsing and managing Pokemon.
 ## Project Structure
 
 ```
-/angular-17-client/          # Angular 17 frontend
-/node-express-mongodb-server/ # Node.js + Express backend
+/angular-pokemon-client/  # Angular 17 frontend
+/angular-pokemon-server/ # Node.js + Express backend
 ```
 
 ## Prerequisites
@@ -37,7 +37,7 @@ docker run -d --name mongodb -p 27017:27017 \
 ### 2. Start Backend
 
 ```bash
-cd node-express-mongodb-server
+cd angular-pokemon-server
 npm install
 node server.js
 ```
@@ -47,7 +47,7 @@ Backend runs on http://localhost:8080
 ### 3. Start Frontend
 
 ```bash
-cd angular-17-client
+cd angular-pokemon-client
 npm install
 npm start
 ```
@@ -87,13 +87,13 @@ Custom Pokemon will appear in the list with a "Custom" badge and can be deleted.
 
 ## Dependencies
 
-### Backend (node-express-mongodb-server)
+### Backend (angular-pokemon-server)
 - express: ^4.18.2
 - mongoose: ^6.11.1
 - cors: ^2.8.5
 - axios: ^1.6.0
 
-### Frontend (angular-17-client)
+### Frontend (angular-pokemon-client)
 - @angular/core: ^17.0.0
 - bootstrap: ^4.6.2
 - rxjs: ~7.8.0
@@ -125,14 +125,6 @@ Custom Pokemon will appear in the list with a "Custom" badge and can be deleted.
   fromApi: Boolean      // True if from PokeAPI
 }
 ```
-
-## Screenshots
-
-The app includes:
-- Pokemon list with paginated cards
-- Search functionality (min 3 characters)
-- Detail view with stats
-- Custom Pokemon creation form
 
 ## License
 

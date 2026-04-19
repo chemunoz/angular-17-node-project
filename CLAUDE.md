@@ -1,11 +1,11 @@
 # Project Instructions
 
 ## Overview
-This is an Angular 17 + Node.js CRUD application with MongoDB database.
+This is an Angular 17 + Node.js Pokemon application with MongoDB database.
 
 ## Project Structure
-- `/angular-17-client` - Angular 17 frontend application
-- `/node-express-mongodb-server` - Node.js Express backend server
+- `/angular-pokemon-client` - Angular 17 frontend application
+- `/angular-pokemon-server` - Node.js Express backend server
 
 ## Running the Project
 
@@ -15,14 +15,14 @@ This is an Angular 17 + Node.js CRUD application with MongoDB database.
 
 ### Backend (Node.js + Express)
 ```bash
-cd node-express-mongodb-server
+cd angular-pokemon-server
 node server.js
 ```
 Server runs on http://localhost:8080
 
 ### Frontend (Angular 17)
 ```bash
-cd angular-17-client
+cd angular-pokemon-client
 ng serve --port 8081
 ```
 App runs on http://localhost:8081
@@ -36,12 +36,12 @@ docker run -d --name mongodb -p 27017:27017 \
 ```
 
 ## Database Configuration
-MongoDB connection is configured in `node-express-mongodb-server/app/config/db.config.js`
+MongoDB connection is configured in `angular-pokemon-server/app/config/db.config.js`
 
 ## API Endpoints
-- `GET /api/tutorials` - Get all tutorials
-- `GET /api/tutorials/:id` - Get tutorial by ID
-- `POST /api/tutorials` - Create new tutorial
-- `PUT /api/tutorials/:id` - Update tutorial
-- `DELETE /api/tutorials/:id` - Delete tutorial
-- `GET /api/tutorials?title=` - Search tutorials by title
+- `GET /api/pokemons/` - Get all Pokemon (syncs from API if empty)
+- `GET /api/pokemons/custom` - Get custom Pokemon only
+- `GET /api/pokemons/stats` - Get count statistics
+- `POST /api/pokemons/custom` - Create custom Pokemon
+- `DELETE /api/pokemons/custom/:id` - Delete custom Pokemon
+- `POST /api/pokemons/sync` - Force sync from PokeAPI

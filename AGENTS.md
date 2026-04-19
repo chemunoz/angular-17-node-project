@@ -10,26 +10,26 @@ This is a full-stack Angular 17 + Node.js application with MongoDB database. It 
 ## Project Structure
 
 ```
-/angular-17-client/          # Angular 17 frontend
+/angular-pokemon-client/     # Angular 17 frontend
   src/app/
-    components/              # Angular components
-    models/                 # TypeScript interfaces
-    services/               # Angular services (HTTP)
-    app.module.ts           # Main Angular module
-    app-routing.module.ts  # Routing configuration
+    components/            # Angular components
+    models/                # TypeScript interfaces
+    services/              # Angular services (HTTP)
+    app.module.ts          # Main Angular module
+    app-routing.module.ts # Routing configuration
 
-/node-express-mongodb-server/ # Node.js backend
+/angular-pokemon-server/    # Node.js backend
   app/
-    config/                 # Database configuration
-    controllers/            # Business logic
-    models/                 # Mongoose models
-    routes/                 # Express routes
-  server.js                 # Express server entry point
+    config/               # Database configuration
+    controllers/         # Business logic
+    models/               # Mongoose models
+    routes/              # Express routes
+  server.js              # Express server entry point
 ```
 
 ## Build Commands
 
-### Angular Frontend (angular-17-client)
+### Angular Frontend (angular-pokemon-client)
 
 ```bash
 # Install dependencies
@@ -45,14 +45,13 @@ npm run build
 # Run tests
 npm test
 # Single test file: ng test --include='**/pokemon-list.component.spec.ts'
-# Single test: ng test --include='**/tutorial.service.spec.ts'
 # Watch mode: ng test --watch
 
 # Run with coverage
 ng test --code-coverage
 ```
 
-### Node.js Backend (node-express-mongodb-server)
+### Node.js Backend (angular-pokemon-server)
 
 ```bash
 # Install dependencies
@@ -235,7 +234,7 @@ describe('ComponentName', () => {
 ## Database
 
 ### MongoDB Configuration
-- Connection string in `node-express-mongodb-server/app/config/db.config.js`
+- Connection string in `angular-pokemon-server/app/config/db.config.js`
 - Default: `mongodb://admin:password@localhost:27017/bezkoder_db?authSource=admin`
 
 ### Docker for MongoDB
@@ -250,24 +249,16 @@ docker run -d --name mongodb -p 27017:27017 \
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/tutorials` | Get all tutorials |
-| GET | `/api/tutorials/:id` | Get tutorial by ID |
-| POST | `/api/tutorials` | Create new tutorial |
-| PUT | `/api/tutorials/:id` | Update tutorial |
-| DELETE | `/api/tutorials/:id` | Delete tutorial |
-| GET | `/api/tutorials?title=` | Search by title |
-
-## External APIs
-
-### PokeAPI
-- Base URL: `https://pokeapi.co/api/v2`
-- Endpoints: `/pokemon`, `/pokemon/{name}`, `/pokemon/{id}`
-- No authentication required
-- Rate limit: please cache locally when possible
+| GET | `/api/pokemons/` | Get all Pokemon (syncs from API if empty) |
+| GET | `/api/pokemons/custom` | Get custom Pokemon only |
+| GET | `/api/pokemons/stats` | Get count statistics |
+| POST | `/api/pokemons/custom` | Create custom Pokemon |
+| DELETE | `/api/pokemons/custom/:id` | Delete custom Pokemon |
+| POST | `/api/pokemons/sync` | Force sync from PokeAPI |
 
 ## Notes
 
-- This project was originally a tutorial CRUD app, expanded with Pokemon features
 - Frontend runs on port 8081, backend on port 8080
 - MongoDB must be running for backend to connect
-- Use `ng lint` if ESLint is configured (not default in Angular 17)
+- First run auto-syncs 150 Pokemon from PokeAPI
+- Custom Pokemon are preserved in MongoDB
