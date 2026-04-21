@@ -1,14 +1,21 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Pokemon } from '../../models/pokemon.model';
 import { PokemonService } from '../../services/pokemon.service';
 
 @Component({
   selector: 'app-pokemon-list',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './pokemon-list.component.html',
-  styleUrls: ['./pokemon-list.component.css']
+  styleUrl: './pokemon-list.component.css'
 })
 export class PokemonListComponent implements OnInit, OnDestroy {
+  private pokemonService = inject(PokemonService);
+  private destroy$ = new Subject<void>();
+
   pokemonList: Pokemon[] = [];
   allPokemon: Pokemon[] = [];
   currentPokemon: Pokemon | null = null;
@@ -20,9 +27,6 @@ export class PokemonListComponent implements OnInit, OnDestroy {
   loading = false;
 
   private searchSubject = new Subject<string>();
-  private destroy$ = new Subject<void>();
-
-  constructor(private pokemonService: PokemonService) {}
 
   ngOnInit(): void {
     this.loadPokemon();
@@ -109,7 +113,7 @@ export class PokemonListComponent implements OnInit, OnDestroy {
   }
 
   getTypeColor(type: string): string {
-    const colors: { [key: string]: string } = {
+    const colors: Record<string, string> = {
       normal: '#A8A878',
       fire: '#F08030',
       water: '#6890F0',

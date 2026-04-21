@@ -7,106 +7,126 @@
     <h4>Pokemon List ({{ totalCount }})</h4>
     
     <div class="row">
-      <div class="col-md-4 mb-3" *ngFor="let pokemon of pokemonList; let i = index">
-        <div class="card h-100" [class.active]="i === currentIndex" (click)="setActivePokemon(pokemon, i)" style="cursor: pointer;">
-          <button *ngIf="pokemon.isCustom" class="btn btn-danger btn-sm delete-btn" (click)="deletePokemon(pokemon, $event)">X</button>
-          <div class="text-center p-3">
-            <img [src]="pokemon.imageUrl || pokemon.sprites?.front_default || pokemon.sprites?.other?.['official-artwork']?.front_default" 
-                 [alt]="pokemon.name" 
-                 style="height: 120px; width: auto;">
-          </div>
-          <div class="card-body text-center">
-            <h5 class="card-title text-capitalize">
-              {{ pokemon.name }}
-              <span *ngIf="pokemon.isCustom" class="badge badge-primary ml-1" style="font-size: 10px;">Custom</span>
-            </h5>
-            <div class="mb-2">
-              <span *ngFor="let type of pokemon.types" 
-                    class="badge mr-1" 
-                    [style.background-color]="getTypeColor(type)">
-                {{ type }}
-              </span>
+      @for (pokemon of pokemonList; track pokemon.id || pokemon._id; let i = $index) {
+        <div class="col-md-4 mb-3">
+          <div class="card h-100" [class.active]="i === currentIndex" (click)="setActivePokemon(pokemon, i)" style="cursor: pointer;">
+            @if (pokemon.isCustom) {
+              <button class="btn btn-danger btn-sm delete-btn" (click)="deletePokemon(pokemon, $event)">X</button>
+            }
+            <div class="text-center p-3">
+              <img [src]="pokemon.imageUrl || pokemon.sprites?.front_default || pokemon.sprites?.other?.['official-artwork']?.front_default" 
+                   [alt]="pokemon.name" 
+                   style="height: 120px; width: auto;">
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title text-capitalize">
+                {{ pokemon.name }}
+                @if (pokemon.isCustom) {
+                  <span class="badge bg-primary ms-1" style="font-size: 10px;">Custom</span>
+                }
+              </h5>
+              <div class="mb-2">
+                @for (type of pokemon.types; track type) {
+                  <span class="badge me-1" 
+                        [style.background-color]="getTypeColor(type)">
+                    {{ type }}
+                  </span>
+                }
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      }
     </div>
 
-    <div class="text-center mb-3" *ngIf="!searchName || searchName.length < 3">
-      <button class="btn btn-secondary mr-2" (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
-      <span>Page {{ currentPage }}</span>
-      <button class="btn btn-secondary ml-2" (click)="nextPage()" [disabled]="(currentPage * pageSize) >= totalCount">Next</button>
-    </div>
+    @if (!searchName || searchName.length < 3) {
+      <div class="text-center mb-3">
+        <button class="btn btn-secondary me-2" (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+        <span>Page {{ currentPage }}</span>
+        <button class="btn btn-secondary ms-2" (click)="nextPage()" [disabled]="(currentPage * pageSize) >= totalCount">Next</button>
+      </div>
+    }
   </div>
 
   <div class="col-md-4">
-    <div *ngIf="currentPokemon" class="card">
-      <div class="card-header">
-        <h5 class="text-capitalize mb-0">
-          {{ currentPokemon.name }}
-          <span *ngIf="currentPokemon.isCustom" class="badge badge-primary ml-1" style="font-size: 10px;">Custom</span>
-        </h5>
-      </div>
-      <div class="card-body text-center">
-        <img [src]="currentPokemon.imageUrl || currentPokemon.sprites?.front_default || currentPokemon.sprites?.other?.['official-artwork']?.front_default" 
-             [alt]="currentPokemon.name" 
-             style="height: 200px; width: auto;">
-        
-        <div class="mt-3">
-          <span *ngFor="let type of currentPokemon.types" 
-                class="badge mr-1" 
-                [style.background-color]="getTypeColor(type)">
-            {{ type }}
-          </span>
+    @if (currentPokemon) {
+      <div class="card">
+        <div class="card-header">
+          <h5 class="text-capitalize mb-0">
+            {{ currentPokemon.name }}
+            @if (currentPokemon.isCustom) {
+              <span class="badge bg-primary ms-1" style="font-size: 10px;">Custom</span>
+            }
+          </h5>
         </div>
-
-        <div class="mt-3 text-left">
-          <p *ngIf="currentPokemon.height"><strong>Height:</strong> {{ currentPokemon.height / 10 }} m</p>
-          <p *ngIf="currentPokemon.weight"><strong>Weight:</strong> {{ currentPokemon.weight / 10 }} kg</p>
+        <div class="card-body text-center">
+          <img [src]="currentPokemon.imageUrl || currentPokemon.sprites?.front_default || currentPokemon.sprites?.other?.['official-artwork']?.front_default" 
+               [alt]="currentPokemon.name" 
+               style="height: 200px; width: auto;">
           
-          <div *ngIf="currentPokemon.stats">
-            <h6>Stats:</h6>
-            <div *ngIf="currentPokemon.stats.hp">
-              <div class="d-flex justify-content-between">
-                <span class="text-capitalize">hp:</span>
-                <strong>{{ currentPokemon.stats.hp }}</strong>
-              </div>
-              <div class="progress mb-2" style="height: 8px;">
-                <div class="progress-bar" [style.width.%]="(currentPokemon.stats.hp / 255) * 100"></div>
-              </div>
-            </div>
-            <div *ngIf="currentPokemon.stats.attack">
-              <div class="d-flex justify-content-between">
-                <span class="text-capitalize">attack:</span>
-                <strong>{{ currentPokemon.stats.attack }}</strong>
-              </div>
-              <div class="progress mb-2" style="height: 8px;">
-                <div class="progress-bar" [style.width.%]="(currentPokemon.stats.attack / 255) * 100"></div>
-              </div>
-            </div>
-            <div *ngIf="currentPokemon.stats.defense">
-              <div class="d-flex justify-content-between">
-                <span class="text-capitalize">defense:</span>
-                <strong>{{ currentPokemon.stats.defense }}</strong>
-              </div>
-              <div class="progress mb-2" style="height: 8px;">
-                <div class="progress-bar" [style.width.%]="(currentPokemon.stats.defense / 255) * 100"></div>
-              </div>
-            </div>
-            <div *ngIf="currentPokemon.stats.speed">
-              <div class="d-flex justify-content-between">
-                <span class="text-capitalize">speed:</span>
-                <strong>{{ currentPokemon.stats.speed }}</strong>
-              </div>
-              <div class="progress mb-2" style="height: 8px;">
-                <div class="progress-bar" [style.width.%]="(currentPokemon.stats.speed / 255) * 100"></div>
-              </div>
-            </div>
+          <div class="mt-3">
+            @for (type of currentPokemon.types; track type) {
+              <span class="badge me-1" 
+                    [style.background-color]="getTypeColor(type)">
+                {{ type }}
+              </span>
+            }
           </div>
+
+          <div class="mt-3 text-start">
+            @if (currentPokemon.height) {
+              <p><strong>Height:</strong> {{ currentPokemon.height / 10 }} m</p>
+            }
+            @if (currentPokemon.weight) {
+              <p><strong>Weight:</strong> {{ currentPokemon.weight / 10 }} kg</p>
+            }
+            
+            @if (currentPokemon.stats) {
+              <h6>Stats:</h6>
+              @if (currentPokemon.stats.hp) {
+                <div class="d-flex justify-content-between">
+                  <span class="text-capitalize">hp:</span>
+                  <strong>{{ currentPokemon.stats.hp }}</strong>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div class="progress-bar" [style.width.%]="(currentPokemon.stats.hp / 255) * 100"></div>
+                </div>
+              }
+              @if (currentPokemon.stats.attack) {
+                <div class="d-flex justify-content-between">
+                  <span class="text-capitalize">attack:</span>
+                  <strong>{{ currentPokemon.stats.attack }}</strong>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div class="progress-bar" [style.width.%]="(currentPokemon.stats.attack / 255) * 100"></div>
+                </div>
+              }
+              @if (currentPokemon.stats.defense) {
+                <div class="d-flex justify-content-between">
+                  <span class="text-capitalize">defense:</span>
+                  <strong>{{ currentPokemon.stats.defense }}</strong>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div class="progress-bar" [style.width.%]="(currentPokemon.stats.defense / 255) * 100"></div>
+                </div>
+              }
+              @if (currentPokemon.stats.speed) {
+                <div class="d-flex justify-content-between">
+                  <span class="text-capitalize">speed:</span>
+                  <strong>{{ currentPokemon.stats.speed }}</strong>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div class="progress-bar" [style.width.%]="(currentPokemon.stats.speed / 255) * 100"></div>
+                </div>
+              }
+            }
+          </div>
+          
+          @if (currentPokemon.isCustom) {
+            <button class="btn btn-danger mt-3" (click)="deletePokemon(currentPokemon, $event)">Delete Pokemon</button>
+          }
         </div>
-        
-        <button *ngIf="currentPokemon.isCustom" class="btn btn-danger mt-3" (click)="deletePokemon(currentPokemon, $event)">Delete Pokemon</button>
       </div>
-    </div>
+    }
   </div>
 </div>

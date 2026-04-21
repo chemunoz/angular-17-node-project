@@ -1,13 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PokemonService } from '../../services/pokemon.service';
 
 @Component({
   selector: 'app-add-pokemon',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './add-pokemon.component.html',
-  styleUrls: ['./add-pokemon.component.css']
+  styleUrl: './add-pokemon.component.css'
 })
 export class AddPokemonComponent {
+  private pokemonService = inject(PokemonService);
+  private router = inject(Router);
+
   name = '';
   imageUrl = '';
   selectedTypes: string[] = [];
@@ -18,13 +25,8 @@ export class AddPokemonComponent {
     'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'
   ];
 
-  constructor(
-    private pokemonService: PokemonService,
-    private router: Router
-  ) {}
-
   getTypeColor(type: string): string {
-    const colors: { [key: string]: string } = {
+    const colors: Record<string, string> = {
       normal: '#A8A878',
       fire: '#F08030',
       water: '#6890F0',
